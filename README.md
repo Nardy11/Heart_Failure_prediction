@@ -1,5 +1,7 @@
 # 🩺 Heart Failure Prediction using Machine Learning
 
+> **Educational project:** This repository is for machine-learning practice and exploratory analysis. It is not a clinical diagnostic system and should not be used for medical decisions.
+
 ## 📌 Context & Motivation
 Cardiovascular diseases (CVDs) are the **leading cause of death globally**. Early detection of heart conditions can **significantly improve treatment outcomes** and **save lives**. This project leverages **machine learning** to enable efficient and reliable **heart disease prediction**, aiding healthcare professionals in early diagnosis.
 
