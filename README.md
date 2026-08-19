@@ -134,6 +134,22 @@ Each model is evaluated using:
 
 ---
 
+## 📊 Model Comparison
+
+The notebook evaluates the models on a held-out test set of 184 samples. The strongest reported configuration by accuracy and F1-score is tuned Random Forest with PCA.
+
+| Configuration | Accuracy | Precision | Recall | F1-score |
+|---|---:|---:|---:|---:|
+| Logistic Regression | 89.67% | 91.92% | 89.22% | 90.55% |
+| Random Forest | 84.24% | 87.63% | 83.33% | 85.43% |
+| Linear SVC | 89.67% | 91.09% | 90.20% | 90.64% |
+| Tuned Linear SVC | 90.22% | 92.00% | 90.20% | 91.09% |
+| Tuned Random Forest + PCA | **90.22%** | 89.62% | **93.14%** | **91.35%** |
+
+**Selected model:** Tuned Random Forest with PCA, because it reports the highest recall and F1-score among the evaluated configurations while matching the best accuracy.
+
+These results are from the notebook’s documented train/test split and should be interpreted as educational model evaluation, not clinical validation.
+
 ## 📁 Project Structure
 heart-failure-prediction/
 │
@@ -147,5 +163,5 @@ heart-failure-prediction/
 ---
 
 ## ✅ Conclusion
-This project demonstrates the **practical use of machine learning in healthcare**, specifically for early detection of heart disease. Through rigorous preprocessing, feature selection, clustering, and classification, we build a system that can support **proactive medical decisions** and potentially **save lives**.
 
+This project demonstrates an end-to-end educational machine-learning workflow: preprocessing, feature engineering, dimensionality reduction, clustering, classification, and hyperparameter tuning. The reported metrics describe performance on this dataset and split only; the project is not a clinical diagnostic system and does not establish medical effectiveness.
