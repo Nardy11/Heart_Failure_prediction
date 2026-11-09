@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heart Disease Risk Demo</title>
+<meta name="description" content="In-browser demo of a logistic-regression heart disease classifier trained on the Kaggle Heart Failure Prediction dataset. Educational only, not medical advice.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f6f5f1; --surface: #ffffff; --ink: #1c1b18; --muted: #6b675e; --line: #e2dfd6;
+  --accent: #b42318; --accent-soft: #fdecea; --cool: #1d4ed8; --warn-bg: #fff7e6; --warn-ink: #7a4b00;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #131312; --surface: #1c1c1a; --ink: #ecebe6; --muted: #a29e94; --line: #2f2e2a;
+    --accent: #f97066; --accent-soft: #3a1714; --cool: #7aa2ff; --warn-bg: #2b2210; --warn-ink: #f5c26b;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.5 "IBM Plex Sans", system-ui, sans-serif;
+}
+.wrap { max-width: 1040px; margin: 0 auto; padding: 32px 16px 48px; }
+header h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); line-height: 1.15; margin: 0 0 8px; font-weight: 600; letter-spacing: -0.01em; }
+header p { margin: 0; color: var(--muted); max-width: 62ch; }
+.notice {
+  margin: 20px 0 28px; padding: 12px 14px; border-radius: var(--radius);
+  background: var(--warn-bg); color: var(--warn-ink); font-size: 0.93rem;
+}
+.grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; }
+@media (max-width: 480px) { form { grid-template-columns: 1fr; } }
+label { display: block; font-size: 0.9rem; font-weight: 500; }
+label small { color: var(--muted); font-weight: 400; font-size: 0.8rem; margin-left: 4px; }
+label input, label select { margin-top: 6px; }
+input, select {
+  font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 8px; padding: 9px 10px; width: 100%; min-height: 42px; display: block;
+}
+input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--cool); outline-offset: 1px; }
+.actions { grid-column: 1 / -1; display: flex; gap: 10px; flex-wrap: wrap; }
+button {
+  font: inherit; font-weight: 500; border-radius: 8px; padding: 9px 14px; min-height: 42px; cursor: pointer;
+  border: 1px solid var(--line); background: transparent; color: var(--ink);
+}
+.result h2 { margin: 0 0 4px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 500; }
+.pct { font: 500 clamp(2.6rem, 8vw, 3.4rem)/1 "IBM Plex Mono", ui-monospace, monospace; margin: 6px 0 4px; }
+.band { font-weight: 600; }
+.meter { height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; margin: 14px 0 20px; }
+.meter > span { display: block; height: 100%; background: var(--accent); transition: width .25s ease-out; }
+@media (prefers-reduced-motion: reduce) { .meter > span, .bar > span { transition: none; } }
+.contrib { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.contrib li { display: grid; grid-template-columns: 9.5rem 1fr; gap: 10px; align-items: center; font-size: 0.9rem; }
+.contrib .why { grid-column: 1 / -1; color: var(--muted); font-size: 0.82rem; margin-top: -6px; }
+.bar { position: relative; height: 10px; }
+.bar::before { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--muted); opacity: .5; }
+.bar > span { position: absolute; top: 0; height: 100%; border-radius: 3px; transition: width .25s ease-out, left .25s ease-out; }
+.up { background: var(--accent); } .down { background: var(--cool); }
+.legend { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); margin: 4px 0 12px; }
+.foot { margin-top: 28px; font-size: 0.85rem; color: var(--muted); }
+.foot a, header a { color: var(--cool); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Heart disease risk: an explainable classifier</h1>
+    <p>A logistic-regression model trained on 734 patients from the
+      <a href="https://www.kaggle.com/datasets/fedesoriano/heart-failure-prediction">Kaggle Heart Failure Prediction dataset</a>.
+      It runs entirely in your browser: nothing you enter leaves this page.</p>
+  </header>
+
+  <p class="notice" role="note"><strong>Educational demo, not medical advice.</strong>
+    This model has only been tested on 184 rows of one public dataset. It is not a diagnostic tool and must not be used to make decisions about anyone's health.</p>
+
+  <div class="grid">
+    <section class="card" aria-labelledby="inputs-h">
+      <h2 id="inputs-h" style="margin:0 0 14px;font-size:1.05rem;font-weight:600">Patient measurements</h2>
+      <form id="f" novalidate>
+        <label>Age <small>years</small><input name="Age" type="number" min="18" max="100" step="1" value="54"></label>
+        <label>Sex<select name="Sex"><option value="M">Male</option><option value="F">Female</option></select></label>
+        <label>Chest pain type
+          <select name="ChestPainType">
+            <option value="ASY">Asymptomatic (ASY)</option><option value="NAP">Non-anginal pain (NAP)</option>
+            <option value="ATA">Atypical angina (ATA)</option><option value="TA">Typical angina (TA)</option>
+          </select></label>
+        <label>Resting blood pressure <small>mm Hg</small><input name="RestingBP" type="number" min="80" max="200" step="1" value="130"></label>
+        <label>Serum cholesterol <small>mg/dl (0 = not measured)</small><input name="Cholesterol" type="number" min="0" max="600" step="1" value="223"></label>
+        <label>Fasting blood sugar &gt; 120 mg/dl<select name="FastingBS"><option value="0">No</option><option value="1">Yes</option></select></label>
+        <label>Resting ECG <small>collected, not used by the model</small>
+          <select name="RestingECG"><option>Normal</option><option value="ST">ST-T abnormality</option><option value="LVH">LV hypertrophy</option></select></label>
+        <label>Max heart rate achieved <small>bpm</small><input name="MaxHR" type="number" min="60" max="210" step="1" value="138"></label>
+        <label>Exercise-induced angina<select name="ExerciseAngina"><option value="N">No</option><option value="Y">Yes</option></select></label>
+        <label>Oldpeak <small>ST depression, mm</small><input name="Oldpeak" type="number" min="-3" max="6.5" step="0.1" value="0.6"></label>
+        <label>ST slope at peak exercise
+          <select name="ST_Slope"><option value="Up">Upsloping</option><option value="Flat" selected>Flat</option><option value="Down">Downsloping</option></select></label>
+        <div class="actions"><button type="reset">Reset to typical values</button></div>
+      </form>
+    </section>
+
+    <section class="card result" aria-live="polite" aria-labelledby="risk-h">
+      <h2 id="risk-h">Predicted probability of heart disease</h2>
+      <div class="pct" id="pct">–</div>
+      <div class="band" id="band"></div>
+      <div class="meter" aria-hidden="true"><span id="meter" style="width:0"></span></div>
+      <h2>What drives this prediction</h2>
+      <div class="legend"><span>← lowers risk</span><span>raises risk →</span></div>
+      <ul class="contrib" id="contrib"></ul>
+      <p class="foot" style="margin-top:16px">Each bar is that input's contribution to the model's log-odds, measured against an average patient in the training data.</p>
+    </section>
+  </div>
+
+  <p class="foot" id="metrics"></p>
+  <p class="foot">Code, notebook, and model card: <a href="https://github.com/Nardy11/Heart_Failure_prediction">github.com/Nardy11/Heart_Failure_prediction</a></p>
+</div>
+
+<script type="module">
+import { predict } from "./predict.js";
+
+const LABELS = {
+  Age: "Age", Sex: "Sex", ChestPainType: "Chest pain type", RestingBP: "Resting BP", Cholesterol: "Cholesterol",
+  FastingBS: "Fasting blood sugar", MaxHR: "Max heart rate", ExerciseAngina: "Exercise angina",
+  Oldpeak: "Oldpeak (ST depression)", ST_Slope: "ST slope",
+};
+const form = document.getElementById("f");
+const model = await (await fetch("./model.json")).json();
+const pct = (x) => `${(x * 100).toFixed(1)}%`;
+const m = model.test_metrics;
+document.getElementById("metrics").textContent =
+  `On the 184-row held-out test set this model scores ${pct(m.accuracy)} accuracy, ${pct(m.recall)} recall and ` +
+  `ROC AUC ${m.roc_auc.toFixed(3)}. Cholesterol and Oldpeak are grouped into medical bands before modelling.`;
+
+function render() {
+  const raw = Object.fromEntries(new FormData(form));
+  const { probability, contributions } = predict(raw, model);
+  document.getElementById("pct").textContent = pct(probability);
+  document.getElementById("meter").style.width = pct(probability);
+  document.getElementById("band").textContent =
+    probability >= 0.7 ? "High model score" : probability >= 0.3 ? "Uncertain: the model could go either way" : "Low model score";
+  const top = contributions.slice(0, 5);
+  const max = Math.max(...contributions.map((c) => Math.abs(c.value)), 0.5);
+  document.getElementById("contrib").innerHTML = top.map(({ input, value }) => {
+    const w = (Math.abs(value) / max) * 50;
+    const cls = value > 0 ? "up" : "down";
+    const left = value > 0 ? 50 : 50 - w;
+    return `<li><span>${LABELS[input]}</span><span class="bar"><span class="${cls}" style="left:${left}%;width:${w}%"></span></span>` +
+      `<span class="why">${value > 0 ? "raises" : "lowers"} the log-odds by ${Math.abs(value).toFixed(2)}</span></li>`;
+  }).join("");
+}
+form.addEventListener("input", render);
+form.addEventListener("reset", () => setTimeout(render));
+render();
+</script>
+</body>
+</html>
