@@ -1,0 +1,4 @@
+gradio>=4.44
+scikit-learn==1.9.*
+pandas
+joblib
