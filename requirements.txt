@@ -1,6 +1,10 @@
-pandas
-numpy
-scikit-learn
-matplotlib
+pandas==3.1.1
+numpy==2.4.6
+scikit-learn==1.9.1
+matplotlib==3.11.2
+joblib==1.6.0
+# notebook only (EDA, clustering, QQ plots)
 seaborn
+statsmodels
+scipy
 jupyter

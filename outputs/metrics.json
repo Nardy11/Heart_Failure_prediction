@@ -1,0 +1,66 @@
+{
+  "notebook_pick": "Random Forest (tuned) + PCA",
+  "seed": 42,
+  "train_size": 734,
+  "test_size": 184,
+  "selected_model": "Logistic Regression (C=0.01, grid-search best)",
+  "pca_components": 15,
+  "results": {
+    "Logistic Regression (C=0.01, grid-search best)": {
+      "accuracy": 0.9130434782608695,
+      "precision": 0.9134615384615384,
+      "recall": 0.9313725490196079,
+      "f1": 0.9223300970873787,
+      "roc_auc": 0.9350789096126255,
+      "cv5_f1_train": 0.8757580847787867
+    },
+    "Logistic Regression (C=10, notebook final table)": {
+      "accuracy": 0.8967391304347826,
+      "precision": 0.9191919191919192,
+      "recall": 0.8921568627450981,
+      "f1": 0.9054726368159204,
+      "roc_auc": 0.9393830703012913,
+      "cv5_f1_train": 0.8728596754294905
+    },
+    "Random Forest (tuned)": {
+      "accuracy": 0.8804347826086957,
+      "precision": 0.8773584905660378,
+      "recall": 0.9117647058823529,
+      "f1": 0.8942307692307693,
+      "roc_auc": 0.9342419894787183,
+      "cv5_f1_train": 0.8759518778124082
+    },
+    "Linear SVC (tuned)": {
+      "accuracy": 0.8967391304347826,
+      "precision": 0.9108910891089109,
+      "recall": 0.9019607843137255,
+      "f1": 0.9064039408866995,
+      "roc_auc": 0.9384265901482545,
+      "cv5_f1_train": 0.8794318972559152
+    },
+    "Logistic Regression (C=10) + PCA": {
+      "accuracy": 0.8967391304347826,
+      "precision": 0.9029126213592233,
+      "recall": 0.9117647058823529,
+      "f1": 0.9073170731707317,
+      "roc_auc": 0.9393830703012912,
+      "cv5_f1_train": 0.8713615886729146
+    },
+    "Random Forest (tuned) + PCA": {
+      "accuracy": 0.9021739130434783,
+      "precision": 0.8962264150943396,
+      "recall": 0.9313725490196079,
+      "f1": 0.9134615384615384,
+      "roc_auc": 0.9398613103778096,
+      "cv5_f1_train": 0.8698872961674857
+    },
+    "Linear SVC (tuned) + PCA": {
+      "accuracy": 0.9021739130434783,
+      "precision": 0.9117647058823529,
+      "recall": 0.9117647058823529,
+      "f1": 0.9117647058823529,
+      "roc_auc": 0.9360353897656624,
+      "cv5_f1_train": 0.8838425472606577
+    }
+  }
+}

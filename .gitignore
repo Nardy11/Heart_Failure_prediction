@@ -1,0 +1,10 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+node_modules/
+.DS_Store
+space/model.joblib
+space/heart_features.py
+flagged/
